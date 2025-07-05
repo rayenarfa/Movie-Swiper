@@ -33,7 +33,7 @@ JWT_SECRET=your-jwt-secret
 TMDB_API_KEY=your-tmdb-api-key
 SUPABASE_URL=your-supabase-url
 SUPABASE_ANON_KEY=your-supabase-anon-key
-```
+
 
 ### 3. Run the App
 
