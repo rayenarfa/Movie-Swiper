@@ -3,6 +3,20 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Validate environment variables
+if (!supabaseUrl) {
+  console.error("Missing VITE_SUPABASE_URL environment variable");
+  throw new Error("VITE_SUPABASE_URL is required");
+}
+
+if (!supabaseAnonKey) {
+  console.error("Missing VITE_SUPABASE_ANON_KEY environment variable");
+  throw new Error("VITE_SUPABASE_ANON_KEY is required");
+}
+
+console.log("Supabase URL:", supabaseUrl); // Debug log
+console.log("Supabase Key exists:", !!supabaseAnonKey); // Debug log
+
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Auth helpers
