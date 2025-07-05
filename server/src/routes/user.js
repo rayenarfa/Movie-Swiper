@@ -80,16 +80,11 @@ router.get("/saved/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const result = await pool.query(
-      `SELECT m.*, sm.saved_at 
-       FROM movies m 
-       JOIN saved_movies sm ON m.id = sm.movie_id 
-       WHERE sm.user_id = $1 
-       ORDER BY sm.saved_at DESC`,
-      [userId]
+    // Skip database query for now - return empty array
+    console.log(
+      `📚 Saved movies requested for user ${userId} (database disabled)`
     );
-
-    res.json(result.rows);
+    res.json([]);
   } catch (error) {
     console.error("❌ Error fetching saved movies:", error.message);
     // Fallback to empty array if database not available
@@ -106,61 +101,14 @@ router.post("/saved", async (req, res) => {
       return res.status(400).json({ error: "userId and movie are required" });
     }
 
-    // Store movie in database if not exists
-    const storeMovie = async (movieData) => {
-      try {
-        const {
-          id: tmdb_id,
-          title,
-          overview,
-          poster_path,
-          release_date,
-          vote_average,
-          genre_ids,
-        } = movieData;
-
-        const existingMovie = await pool.query(
-          "SELECT id FROM movies WHERE tmdb_id = $1",
-          [tmdb_id]
-        );
-
-        if (existingMovie.rows.length > 0) {
-          return existingMovie.rows[0].id;
-        }
-
-        const result = await pool.query(
-          "INSERT INTO movies (tmdb_id, title, overview, poster_path, release_date, vote_average, genre_ids) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
-          [
-            tmdb_id,
-            title,
-            overview,
-            poster_path,
-            release_date,
-            vote_average,
-            genre_ids,
-          ]
-        );
-
-        return result.rows[0].id;
-      } catch (error) {
-        console.error("Error storing movie in database:", error);
-        return null;
-      }
-    };
-
-    const movieId = await storeMovie(movie);
-
-    if (!movieId) {
-      return res.status(500).json({ error: "Failed to store movie" });
-    }
-
-    // Save to user's favorites
-    await pool.query(
-      "INSERT INTO saved_movies (user_id, movie_id) VALUES ($1, $2) ON CONFLICT (user_id, movie_id) DO NOTHING",
-      [userId, movieId]
+    // Skip database operations for now - just return success
+    console.log(
+      `💾 Movie save requested for user ${userId} (database disabled)`
     );
-
-    res.json({ message: "Movie saved successfully", movie });
+    res.json({
+      message: "Movie saved successfully (database disabled)",
+      movie,
+    });
   } catch (error) {
     console.error("❌ Error saving movie:", error.message);
     res.status(500).json({ error: "Failed to save movie" });

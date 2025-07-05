@@ -1,7 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useSwipeStore } from '../store/useSwipeStore';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useSwipeStore } from "../store/useSwipeStore";
+import { buildApiUrl } from "../config/api";
+import {
+  ArrowLeft,
+  Heart,
+  Share2,
+  Play,
+  Star,
+  Calendar,
+  Clock,
+  Globe,
+  User,
+  Award,
+  Bookmark,
+  BookmarkCheck,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 
 interface MovieDetailsProps {
   movie?: any;
@@ -54,7 +71,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
   const { movieId } = useParams<{ movieId: string }>();
   const navigate = useNavigate();
   const { savedMovies, addSavedMovie, removeSavedMovie } = useSwipeStore();
-  
+
   const [movie, setMovie] = useState<EnhancedMovie | null>(propMovie || null);
   const [loading, setLoading] = useState(!propMovie);
   const [error, setError] = useState<string | null>(null);
@@ -68,23 +85,25 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
 
   useEffect(() => {
     if (movie) {
-      setIsSaved(savedMovies.some(savedMovie => savedMovie.id === movie.id));
+      setIsSaved(savedMovies.some((savedMovie) => savedMovie.id === movie.id));
     }
   }, [movie, savedMovies]);
 
   const fetchMovieDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/movies/${movieId}`);
-      
+      const response = await fetch(buildApiUrl(`/movies/${movieId}`));
+
       if (!response.ok) {
-        throw new Error('Failed to fetch movie details');
+        throw new Error("Failed to fetch movie details");
       }
-      
+
       const movieData = await response.json();
       setMovie(movieData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch movie details');
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch movie details"
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +111,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
 
   const handleSaveToggle = () => {
     if (!movie) return;
-    
+
     if (isSaved) {
       removeSavedMovie(movie.id);
     } else {
@@ -110,19 +129,19 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
     } else if (movie) {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href);
-      alert('Movie link copied to clipboard!');
+      alert("Movie link copied to clipboard!");
     }
   };
 
   const getDirector = () => {
     if (!movie?.credits?.crew) return null;
-    return movie.credits.crew.find(person => person.job === 'Director');
+    return movie.credits.crew.find((person) => person.job === "Director");
   };
 
   const getTrailer = () => {
     if (!movie?.videos?.results) return null;
-    return movie.videos.results.find(video => 
-      video.type === 'Trailer' && video.site === 'YouTube'
+    return movie.videos.results.find(
+      (video) => video.type === "Trailer" && video.site === "YouTube"
     );
   };
 
@@ -139,7 +158,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="bg-blue-600 text-white px-4 py-2 rounded"
           >
@@ -169,27 +188,59 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 z-10 bg-black bg-opacity-50 rounded-full p-2"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
-        
+
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             onClick={handleShare}
             className="bg-black bg-opacity-50 rounded-full p-2"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-          </svg>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+              />
+            </svg>
           </button>
-          
+
           <button
             onClick={handleSaveToggle}
-            className={`rounded-full p-2 ${isSaved ? 'bg-red-600' : 'bg-black bg-opacity-50'}`}
+            className={`rounded-full p-2 ${
+              isSaved ? "bg-red-600" : "bg-black bg-opacity-50"
+            }`}
           >
-            <svg className="w-6 h-6" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <svg
+              className="w-6 h-6"
+              fill={isSaved ? "currentColor" : "none"}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
             </svg>
           </button>
         </div>
@@ -213,7 +264,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
             alt={movie.title}
             className="w-32 h-48 object-cover rounded-lg shadow-lg"
           />
-          
+
           <div className="flex-1 pt-8">
             <h1 className="text-2xl font-bold mb-2">{movie.title}</h1>
             <div className="flex items-center gap-4 mb-2">
@@ -222,7 +273,9 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
               </span>
               <span className="text-gray-400">{movie.vote_count} votes</span>
             </div>
-            <p className="text-gray-400 mb-2">{new Date(movie.release_date).getFullYear()}</p>
+            <p className="text-gray-400 mb-2">
+              {new Date(movie.release_date).getFullYear()}
+            </p>
             {movie.runtime && (
               <p className="text-gray-400 mb-2">{movie.runtime} min</p>
             )}
@@ -234,7 +287,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
 
         {/* Genres */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {movie.genres?.map(genre => (
+          {movie.genres?.map((genre) => (
             <span
               key={genre.id}
               className="bg-gray-800 text-gray-300 px-3 py-1 rounded-full text-sm"
@@ -270,12 +323,13 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">Cast</h2>
             <div className="flex gap-4 overflow-x-auto pb-4">
-              {movie.credits.cast.slice(0, 10).map(person => (
+              {movie.credits.cast.slice(0, 10).map((person) => (
                 <div key={person.id} className="flex-shrink-0 w-24 text-center">
                   <img
-                    src={person.profile_path 
-                      ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
-                      : '/placeholder-avatar.png'
+                    src={
+                      person.profile_path
+                        ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                        : "/placeholder-avatar.png"
                     }
                     alt={person.name}
                     className="w-20 h-20 rounded-full object-cover mx-auto mb-2"
@@ -289,24 +343,25 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie: propMovie }) => {
         )}
 
         {/* Production Companies */}
-        {movie.production_companies && movie.production_companies.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Production</h2>
-            <div className="flex flex-wrap gap-2">
-              {movie.production_companies.map(company => (
-                <span
-                  key={company.id}
-                  className="bg-gray-800 text-gray-300 px-3 py-1 rounded text-sm"
-                >
-                  {company.name}
-                </span>
-              ))}
+        {movie.production_companies &&
+          movie.production_companies.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Production</h2>
+              <div className="flex flex-wrap gap-2">
+                {movie.production_companies.map((company) => (
+                  <span
+                    key={company.id}
+                    className="bg-gray-800 text-gray-300 px-3 py-1 rounded text-sm"
+                  >
+                    {company.name}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
 };
 
-export default MovieDetails; 
+export default MovieDetails;

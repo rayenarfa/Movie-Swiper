@@ -140,42 +140,8 @@ router.get("/:movieId", async (req, res) => {
   try {
     const { movieId } = req.params;
 
-    // Try to get from database first
-    try {
-      const dbResult = await pool.query(
-        "SELECT * FROM movies WHERE tmdb_id = $1",
-        [movieId]
-      );
-
-      if (dbResult.rows.length > 0) {
-        const movie = dbResult.rows[0];
-
-        // Get additional details from TMDB
-        const [movieResponse, creditsResponse, videosResponse] =
-          await Promise.all([
-            axios.get(`${TMDB_BASE_URL}/movie/${movieId}`, {
-              params: { api_key: TMDB_API_KEY },
-            }),
-            axios.get(`${TMDB_BASE_URL}/movie/${movieId}/credits`, {
-              params: { api_key: TMDB_API_KEY },
-            }),
-            axios.get(`${TMDB_BASE_URL}/movie/${movieId}/videos`, {
-              params: { api_key: TMDB_API_KEY },
-            }),
-          ]);
-
-        const enhancedMovie = {
-          ...movie,
-          ...movieResponse.data,
-          credits: creditsResponse.data,
-          videos: videosResponse.data,
-        };
-
-        return res.json(enhancedMovie);
-      }
-    } catch (dbError) {
-      console.log("🔄 Database not available, fetching from TMDB");
-    }
+    // Skip database query for now - go straight to TMDB
+    console.log("🔄 Database not available, fetching from TMDB");
 
     // Fetch from TMDB with enhanced details
     const [movieResponse, creditsResponse, videosResponse] = await Promise.all([
@@ -196,8 +162,8 @@ router.get("/:movieId", async (req, res) => {
       videos: videosResponse.data,
     };
 
-    // Store in database
-    await storeMovieInDB(movieResponse.data);
+    // Skip database storage for now
+    // await storeMovieInDB(movieResponse.data);
 
     res.json(movie);
   } catch (error) {
