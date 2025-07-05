@@ -1,0 +1,20 @@
+{
+  "name": "movie-swiper",
+  "version": "1.0.0",
+  "description": "A swipe-based movie/show recommender",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix web\" \"npm run dev --prefix server\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "movie",
+    "recommendation",
+    "swipe"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
